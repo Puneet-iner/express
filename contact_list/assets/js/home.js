@@ -1,0 +1,1 @@
+console.log("home.js file is loded");
