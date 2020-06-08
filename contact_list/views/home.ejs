@@ -5,19 +5,27 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title><%= locals.title%></title>
     <!-- locals are global object -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
     <link rel="stylesheet" type="text/css" href="/css/home.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
 </head>
 <body>
-    <h2>
+    <h2 id="page-heading">
         <i class="fa fa-address-book"></i>
         My Contact List
     </h2>
-    <ul>
+    <ul id="contacts-list-container">
         <% for(let i of contactList) { %> 
-                <li>
+                <li class="contact">
                     <p class="name"><%= i.name %></p>
                     <p class="num"><%= i.phone %></p>
+                    <!-- The bottom line will be /delete-contact will be automatically get request -->
+                    <!-- <a href="/delete-contact/<%= i.phone %>">
+                        <i class="fa fa-times" aria-hidden="true"></i>
+                    </a> -->
+                    <a href="/delete-contact/?phone=<%= i.phone %>">
+                        <i class="fa fa-times" aria-hidden="true"></i>
+                    </a>
                 </li>
         <% } %>
     </ul>

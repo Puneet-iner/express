@@ -34,3 +34,10 @@ li{
 li:hover{
     background-color: grey;
 }
+.fa-times{
+    color: white;
+}
+.fa-times:hover{
+    color: white;
+    background-color: red;
+}
