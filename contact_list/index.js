@@ -1,6 +1,10 @@
 const express = require('express');
 const path = require('path');
 const port = 8000;
+
+//mongoose just before express fire up
+const db = require('./config/mongoose');
+const Contact = require('./models/contact');
 const app = express();
 var contactList = [
     {
@@ -9,7 +13,7 @@ var contactList = [
     }
 ];
 
-//view engine  used to render view file into html code
+//view engine  used to     render view file into html code
 app.set('view engine', 'ejs');
 //__dirname is used to get current directory
 app.set('views', path.join(__dirname, 'views'));// just to set views value to view path
@@ -35,10 +39,15 @@ app.use(express.static("assets"));//used here to make middleware for accessing c
 // '/' is route and 'function() is the controller'
 app.get('/', function(req, res){
     //sending title as vairiable in home page
-    return res.render('home', {
-        title: "Contact List",
-        contactList: contactList
-    });//it's not neccesary to use res.render in return statement
+    Contact.find({}, function(err, contacts){
+        if(err){
+            console.log("error in fetching data from datanaase");
+        }
+        return res.render('home', {
+            title: "Contact List",
+            contactList: contacts
+        });//it's not neccesary to use res.render in return statement
+    });
 });
 
 app.get('/practice', function(req, res){
@@ -48,10 +57,19 @@ app.get('/practice', function(req, res){
 });
 
 app.post('/create-contact', function(req, res){
-    contactList.push(req.body);
-    console.log(req.body.name);
+    // contactList.push(req.body);
     // return res.redirect('/');//rediredcts to an end point
     //here "back" has it's own significance
+    Contact.create({
+        name: req.body.name,
+        phone: req.body.phone
+    }, function(err, newContact){
+        if(err){
+            console.log("error in adding data");
+            return;
+        }
+        console.log("added to database");
+    });
     return res.redirect('back');
 });
 
@@ -70,12 +88,18 @@ app.post('/create-contact', function(req, res){
 //query is like form, above method also works, it is like forms get =>it will show params in the loading link
 app.get('/delete-contact', function(req, res){
     console.log(req.query);
-    let phone = req.query.phone;
-    let contactIndex = contactList.findIndex(contact => contact.phone == phone);//it is a kind of for each loop  which is very advance
-    if(contactIndex != -1){
-        contactList.splice(contactIndex, 1);
-    }
-    return res.redirect('back');
+    // let phone = req.query.phone;
+    // let contactIndex = contactList.findIndex(contact => contact.phone == phone);//it is a kind of for each loop  which is very advance
+    // if(contactIndex != -1){
+    //     contactList.splice(contactIndex, 1);
+    // }
+    Contact.findByIdAndDelete(req.query.id, function(err){
+        if(err){
+            console.log("error in deleting");
+            return;
+        }
+        return res.redirect('back');
+    });
 });
 
 app.listen(port);
